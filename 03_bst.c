@@ -104,15 +104,22 @@ int insert(tree* t, int value)
 }
 
 // получение кол-во уровней в дереве
-int get_levels(struct node * n, int deep) 
+int get_levels(node* cur) 
 {
-	  if (n == NULL){
-    return deep;
-  }
-  int d1 = get_levels(n->left, deep + 1);
-  int d2 = get_levels(n->right, deep + 1);
-
-  return (d1 > d2) ? d1 : d2;
+	if (cur == NULL)
+	{
+		return 0;
+	}
+	int lmax = 1 + get_levels(cur->left);
+	int rmax = 1 + get_levels(cur->right);
+	if (lmax > rmax)
+	{
+		return lmax;
+	}
+	else
+	{
+		return rmax;
+	}
 }
 
 //функция для вывода уровня
@@ -125,7 +132,10 @@ void print_level(node* cur, int curl, int d, int first)
 			printf(" ");
 		}
 
-		if (cur != NULL) 
+		if (cur == NULL) {
+		printf("_");
+		}
+		else
 		{
 		printf("%d", cur->value);
 		}
@@ -149,8 +159,8 @@ void print_level(node* cur, int curl, int d, int first)
 // Если дерево пусто, вывести -
 void print(node* n)
 {
-	int m = get_levels(n, 0);
-	for (int i = 1; i <= m; i++)
+	int num = get_levels(n);
+	for (int i = 1; i <= num; i++)
 	{
 		print_level(n, 1, i, 0);
 		printf("\n");
@@ -163,21 +173,21 @@ void printTree(tree * t)
 	print(t->root);
 }
 
-void print1(struct node * n)
+//Обратный обход дерева
+void print3(struct node * n, int flag)
 {
-	int m = get_levels(n, 0);
-	int flag = 0;
-	for (int i = 1; i <= m; i++)
+	if (n->left != NULL)
 	{
-		if (flag > 0)
-		{
-		printf(" ");
-		} 
-		else 
-		{
-		flag++;
-		}
-	print_level(n, 1, i, 0);
+        print3(n->left, flag + 1);
+	}
+	if (n->right != NULL)
+	{
+	print3(n->right, flag + 1);
+	}
+	printf("%d", n->value);
+	if (flag > 0)
+	{
+	printf(" ");
 	}
 }
 
@@ -187,11 +197,11 @@ int main()
 	init(t);
 	for (int i = 0; i < 7; i++)
 	{
-		int a;
-		scanf("%d", &a);
-		insert(t, a);
+	int a;
+	scanf("%d", &a);
+	insert(t, a);
 	}
-	print1(t->root);
+	print3(t->root, 0);
 	printf("\n");
 	return 0;
 }
