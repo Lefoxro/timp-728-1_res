@@ -104,15 +104,22 @@ int insert(tree* t, int value)
 }
 
 // получение кол-во уровней в дереве
-int get_levels(struct node * n, int deep) 
+int get_levels(node* cur) 
 {
-	  if (n == NULL){
-    return deep;
-  }
-  int d1 = get_levels(n->left, deep + 1);
-  int d2 = get_levels(n->right, deep + 1);
-
-  return (d1 > d2) ? d1 : d2;
+	if (cur == NULL)
+	{
+		return 0;
+	}
+	int lmax = 1 + get_levels(cur->left);
+	int rmax = 1 + get_levels(cur->right);
+	if (lmax > rmax)
+	{
+		return lmax;
+	}
+	else
+	{
+		return rmax;
+	}
 }
 
 //функция для вывода уровня
@@ -125,7 +132,10 @@ void print_level(node* cur, int curl, int d, int first)
 			printf(" ");
 		}
 
-		if (cur != NULL) 
+		if (cur == NULL) {
+		printf("_");
+		}
+		else
 		{
 		printf("%d", cur->value);
 		}
@@ -149,8 +159,8 @@ void print_level(node* cur, int curl, int d, int first)
 // Если дерево пусто, вывести -
 void print(node* n)
 {
-	int m = get_levels(n, 0);
-	for (int i = 1; i <= m; i++)
+	int num = get_levels(n);
+	for (int i = 1; i <= num; i++)
 	{
 		print_level(n, 1, i, 0);
 		printf("\n");
@@ -163,35 +173,55 @@ void printTree(tree * t)
 	print(t->root);
 }
 
-void print1(struct node * n)
+//Прямой обход дерева
+void print2(struct tree * t)
 {
-	int m = get_levels(n, 0);
-	int flag = 0;
-	for (int i = 1; i <= m; i++)
+	node *a[15];
+	int ai = 0;
+	node *write[15];
+	int wi = 0;
+	node *n = t->root;
+	while (wi < t->numbers)
 	{
-		if (flag > 0)
+        while (n != NULL)
+	{
+		wi++;
+		if (n->right != NULL)
 		{
-		printf(" ");
-		} 
-		else 
-		{
-		flag++;
+                ai++;
+                a[ai] = n->right;
 		}
-	print_level(n, 1, i, 0);
+		write[wi] = n;
+		n = n->left;
 	}
+        n = a[ai];
+        ai -= 1;
+	}
+	int flag = 0;
+	for (int i = 1; i <= wi; i++){
+        if (flag > 0)
+	{
+	printf(" ");
+        } 
+	else 
+	{
+	flag++;
+        }
+        printf("%d", write[i]->value);
+    	}
+	printf("\n");
 }
 
-int main()
-{
-	struct tree * t = malloc(sizeof t);
-	init(t);
-	for (int i = 0; i < 7; i++)
-	{
-		int a;
-		scanf("%d", &a);
-		insert(t, a);
-	}
-	print1(t->root);
-	printf("\n");
-	return 0;
+
+int main(){
+
+  struct tree * t = malloc(sizeof t);
+  init(t);
+  for (int i = 0; i < 7; i++){
+    int a;
+    scanf("%d", &a);
+    insert(t, a);
+  }
+  print2(t);
+  return 0;
 }
